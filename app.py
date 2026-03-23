@@ -9,7 +9,7 @@ api_key = st.secrets.get("GEMINI_API_KEY") or st.secrets.get("api_key") or st.se
 
 if api_key:
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    model = genai.GenerativeModel('gemini-pro')
 else:
     st.error("Falta la API Key en los Secrets de Streamlit")
 
