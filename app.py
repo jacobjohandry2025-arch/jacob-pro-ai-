@@ -1,23 +1,29 @@
 import streamlit as st
 import google.generativeai as genai
 
-# Configuración básica
+# Configuración de la página
 st.set_page_config(page_title="Jacob Pro IA", page_icon="🤖")
 st.title("JACOB PRO AI v.1.0")
 
-# Cargar la llave desde los Secrets (Misterios)
+# --- TRUCO PARA ELIMINAR EL ERROR 404 ---
+from google.generativeai import client
+client.DEFAULT_API_VERSION = 'v1'
+# ---------------------------------------
+
+# Obtener la llave
 api_key = st.secrets.get("GEMINI_API_KEY") or st.secrets.get("api_key")
 
 if api_key:
     try:
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        # Usamos el modelo con su nombre completo y estable
+        model = genai.GenerativeModel('models/gemini-1.5-flash')
     except Exception as e:
         st.error(f"Error de configuración: {e}")
 else:
-    st.warning("⚠️ Falta la API Key en Secrets.")
+    st.warning("⚠️ Revisa tus Secrets en Streamlit.")
 
-# Chat
+# Historial
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -33,11 +39,11 @@ if prompt := st.chat_input("Escribe aquí..."):
     with st.chat_message("assistant"):
         if api_key:
             try:
-                # Intentar generar respuesta
                 response = model.generate_content(prompt)
                 st.markdown(response.text)
                 st.session_state.messages.append({"role": "assistant", "content": response.text})
             except Exception as e:
-                st.error(f"Error: {str(e)}")
+                st.error(f"Error de conexión: {str(e)}")
         else:
-            st.info("Sin conexión a la llave.")
+            st.info("IA de Jacob Online (Sin conexión)")
+
